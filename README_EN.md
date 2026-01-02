@@ -32,7 +32,9 @@ import asyncio
 
 async def main():
     query = "AI search MIKU"
-    articles = await get_wexin_article(query)
+    # fetch top 5 articles within the last 14 days (default)
+    articles = await get_wexin_article(query, top_num=5, max_age_days=14)
+
     for article in articles:
         print("Title:", article['title'])
         print("URL:", article['url'])
@@ -46,9 +48,10 @@ asyncio.run(main())
 <img alt="MIKU" height="450px" src="https://github.com/user-attachments/assets/4aa6339d-4873-4c15-a7d4-81aa2ff92b14"> 
 
 ## API
-### `get_wexin_article(query, top_num=5)`
+### `get_wexin_article(query, top_num=5, max_age_days=14)`
 - `query`: Search keyword (string)
 - `top_num`: Maximum number of results to return (integer, default is 5)
+- `max_age_days`: Only include articles published within the last `max_age_days` days (integer, default 14). Use `None` to disable time filtering.
 
 Returns a list of dictionaries, each representing an article, containing the following keys:
 - `title`: Article title

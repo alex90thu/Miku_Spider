@@ -37,7 +37,12 @@ import asyncio
 
 async def main():
     query = "AI搜索MIKU"
-    articles = await get_wexin_article(query)
+    # fetch top 5 articles within the last 14 days (default)
+    articles = await get_wexin_article(query, top_num=5, max_age_days=14)
+
+    # or fetch articles from the last 7 days
+    # articles = await get_wexin_article(query, top_num=5, max_age_days=7)
+
     for article in articles:
         print("标题：", article['title'])
         print("URL：", article['url'])
@@ -55,10 +60,11 @@ asyncio.run(main())
 
 ## API
 
-### `get_wexin_article(query, top_num=5)`
+### `get_wexin_article(query, top_num=5, max_age_days=14)`
 
 - `query`: 搜索关键词（字符串）
 - `top_num`: 返回的最大结果数量（整数，默认为5）
+- `max_age_days`: 只返回最近 `max_age_days` 天内发布的文章（整数，默认14）；设为 `None` 则不按时间过滤
 
 返回一个包含字典的列表，每个字典代表一篇文章，包含以下键：
 - `title`: 文章标题
