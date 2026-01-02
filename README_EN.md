@@ -24,6 +24,25 @@ Install Miku Spider using pip:
 pip install miku_ai
 ```
 
+For local development, use an editable install so changes in your working tree take effect immediately:
+
+```bash
+# optionally uninstall the released package to avoid confusion
+pip uninstall -y miku_ai
+
+# from the repository root
+pip install -e .
+
+# install dependencies
+pip install -r requirements.txt
+```
+
+Or temporarily prioritize the local repo with PYTHONPATH:
+
+```bash
+PYTHONPATH=/path/to/Miku_Spider python your_script.py
+```
+
 ## Usage
 Here's a basic usage example:
 ```python
@@ -67,6 +86,16 @@ Returns a list of dictionaries, each representing an article, containing the fol
 
 ## Contribution
 Issues and pull requests are welcome to help improve this project.
+
+---
+
+⚠️ Example project note (important)
+
+The example in this repository `examples/fastapi_llm` has been evolved into a separate project named **wespider_api** (initial code is prepared in the `wespider_api/` folder and initialized as a separate local repository).
+
+Please note: **wespider_api depends on some recent changes to this repository (for example, the configurable `max_age_days` parameter for `get_wexin_article`).** Those changes have been submitted as a Pull Request to the upstream `miku_ai` repository; after the PR is merged and a new version is released on PyPI, `wespider_api` can be published and installed as an independent project.
+
+If you want, I can help push `wespider_api` to your GitHub and create the remote repository / PR; please publish `wespider_api` after the upstream PR merges to avoid dependency mismatches.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
