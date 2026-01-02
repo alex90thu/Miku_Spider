@@ -32,17 +32,17 @@ async def _call_llm(prompt: str) -> str:
 
 @app.post("/summarize")
 async def summarize(req: QueryReq):
+    """Fetch articles and return the raw results as JSON.
+
+    Returns:
+        {"count": int, "articles": [dict, ...]}
+    """
     try:
         articles = await get_wexin_article(req.query, top_num=req.top, max_age_days=req.max_age_days)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching articles: {e}")
 
-    prompt = "请基于下面文章标题与链接给出简明摘要与推荐：\n\n"
-    for a in articles:
-        prompt += f"- {a.get('title')} ({a.get('url')})\n"
-
-    summary = await _call_llm(prompt)
-    return {"summary": summary, "count": len(articles), "articles": articles}
+    return {"count": len(articles), "articles": articles}
 
 if __name__ == "__main__":
     import uvicorn

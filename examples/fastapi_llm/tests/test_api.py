@@ -12,13 +12,16 @@ async def test_summarize_endpoint(monkeypatch):
             {"title": "Recent 2", "url": "http://example.com/2", "source": "S2", "date": "2025-12-29 12:00:00"}
         ]
 
-    monkeypatch.setattr('miku_ai.get_wexin_article', fake_get_wexin_article)
+    # patch the function used by the example app (imported into module)
+    monkeypatch.setattr('examples.fastapi_llm.app.get_wexin_article', fake_get_wexin_article)
 
     async with AsyncClient(app=app, base_url="http://test") as client:
         resp = await client.post('/summarize', json={"query": "AI", "top": 2, "max_age_days": 14})
         assert resp.status_code == 200
         data = resp.json()
-        assert 'summary' in data and 'count' in data and data['count'] == 2
+        assert 'articles' in data and 'count' in data and data['count'] == 2
+        assert isinstance(data['articles'], list)
+        assert data['articles'][0]['title'] == 'Recent 1'
 
         # swagger UI docs should be reachable at /docs
         resp_docs = await client.get('/docs')
