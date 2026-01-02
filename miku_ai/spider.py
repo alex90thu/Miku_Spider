@@ -161,16 +161,25 @@ async def get_wexin_article(query, top_num=5, max_age_days=14):
     spider = MikuSpider()
     return await spider.get_wexin_article(query, top_num, max_age_days)
 
-# Example usage
+# Example usage: prints results as JSON. When run as a script, you can pass arguments:
+#   python -m miku_ai.spider --query "AI搜索MIKU" --top 5 --max-age 14
+# Use --max-age -1 to disable time filtering.
 async def main():
-    query = "AI搜索MIKU"
-    articles = await get_wexin_article(query)
-    for item in articles:
-        print("title：", item['title'])
-        print("url：", item['url'])
-        print("source：", item['source'])
-        print("date：", item['date'])
-        print("-" * 50)
+    import argparse
+    import json
+
+    parser = argparse.ArgumentParser(description='Fetch Weixin articles and output JSON')
+    parser.add_argument('--query', '-q', default='AI搜索MIKU', help='search query')
+    parser.add_argument('--top', '-n', type=int, default=5, help='maximum number of articles to return')
+    parser.add_argument('--max-age', '-m', type=int, default=14, help='maximum age in days (use -1 to disable)')
+    args = parser.parse_args()
+
+    max_age = None if args.max_age is None or args.max_age < 0 else args.max_age
+
+    articles = await get_wexin_article(args.query, top_num=args.top, max_age_days=max_age)
+
+    # print JSON to stdout
+    print(json.dumps(articles, ensure_ascii=False, indent=2))
 
 if __name__ == "__main__":
     asyncio.run(main())
