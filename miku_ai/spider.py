@@ -103,7 +103,8 @@ class MikuSpider:
             full_link = "https://weixin.sogou.com" + link if link else ''
 
             get_wexin_article_content = await self.get_wexin_article_url(full_link) if full_link else ''
-            pattern = re.compile(r"url\s*\+=\s*'([^']*)'")
+            # accept single- or double-quoted parts when reconstructing the content URL
+            pattern = re.compile(r"url\s*\+=\s*['\"]([^'\"]*)['\"]")
             url_parts = pattern.findall(get_wexin_article_content) if get_wexin_article_content else []
             url = ''.join(url_parts).replace('@', '') if url_parts else ''
 
@@ -137,7 +138,8 @@ class MikuSpider:
         """
         content = await self.weixin_spider(query)
         soup = BeautifulSoup(content, 'html.parser')
-        news_list = soup.find_all('li', {'id': lambda x: x and x.startswith('sogou_vr_11002601_box_')})
+        # match various sogou result list item id patterns to be more robust
+        news_list = soup.find_all('li', id=re.compile(r'^sogou_vr_\d+_box_'))
         tasks = [self.parse_item(item) for item in news_list]
         articles = await asyncio.gather(*tasks)
         articles = [article for article in articles if article['url']]
